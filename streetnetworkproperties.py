@@ -1,11 +1,10 @@
 import os
 import time
 import multiprocessing as mp
-from shapely.geometry import MultiPoint
 
 from utils.utils import *
 from utils.graph_indices import *
-from utils.area_definitions import get_polygon
+
 
 def network_properties(routeid, city, extent, path, routes):
     print(routeid)
@@ -18,9 +17,11 @@ def network_properties(routeid, city, extent, path, routes):
     # read clipped graph of selected area extent
     graph = NetworkGraph(os.path.join(path_sub, extent, '{:s}_nx_graph_{:02d}.p'.format(city[3:].lower(), routeid)))
 
+    # read convex hull polygon shape
+    polygon = nx.read_gpickle(os.path.join(path_sub, extent, '{:s}_polygon_{:02d}.p'.format(city[3:].lower(), routeid)))
+
     # feature/property computation for defined area
-    convexhull = get_polygon(graph)
-    features = indices(routeid, graph, convexhull, routes[routeid])
+    features = indices(routeid, graph, polygon, routes[routeid])
 
     # store features as csv
     features.to_csv(os.path.join(path_res, '{:s}_properties_{:02d}.csv'.format(city[3:].lower(), routeid)), index=False)

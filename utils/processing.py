@@ -71,8 +71,12 @@ def graph_clipping(routeid, city, graph, routes, path, size):
         node_ratios = pd.read_csv(os.path.join(path, 'boundingbox', 'node_ratios', 'route_{:02d}.csv'.format(routeid)))
         g = NetworkGraph(os.path.join(
             path, 'subgraphs_with_centralities', '{:s}_nx_graph_{:02d}.p'.format(city[3:].lower(), routeid)))
-        _, n_spnode = area_node_ratios(g, node_ratios, sp_length, thresh, buffer)
+        g_poly, n_spnode = area_node_ratios(g, node_ratios, sp_length, thresh, buffer)
         g_sub = NetworkGraph('', graph=g.graph, nodelist=n_spnode['id'])
+
+        # store polygon shape
+        path_out_poly = os.path.join(path, size, '{:s}_polygon_{:02d}.p'.format(city[3:].lower(), routeid))
+        nx.write_gpickle(g_poly, path_out_poly)
 
     else:
         print('Set the variable size to a valid input (boundingbox, subgraphs, big, medium, small).')
@@ -98,7 +102,7 @@ def graph_clipping(routeid, city, graph, routes, path, size):
             except:
                 l = 0
             pt = g_sub.nodes[nodeset.id.iloc[n]]['geom_utm']
-            temp[i, :] = np.array([pt.x, pt.y, l])
+            temp[n, :] = np.array([pt.x, pt.y, l])
         nodeset = pd.concat([nodeset, pd.DataFrame(temp, columns=['x', 'y', 'l'])], axis=1)
 
         save_path = os.path.join(path, size, 'node_ratios', 'route_{:02d}.csv'.format(routeid))
