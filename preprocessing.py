@@ -7,7 +7,7 @@ if __name__ == '__main__':
     '''
     - script for preprocessing
     - can be used to clip a graph (set function to 'clipping', select size)
-    - can be used to compute local centalities (set function to 'centralities')
+    - can be used to compute local centralities (set function to 'centralities')
      
     -> select city
     -> select clipping of subgraphs or local centrality computation
